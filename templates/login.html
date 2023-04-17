@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends "layout.html" %}
+
+{% block title %}
+Calgary Bookstore
+{% endblock %}
+
+{% block body %}
+<h1>Login Page</h1>
+{% if success %}
+<h2>Welcome {{ users.username }}! You can enjoy <a href="{{url_for('search')}}">WeatherNet</a> now</h2>
+<div class="form-group">
+  <a href="{{url_for('login')}}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Log out</a>
+</div>
+{% else %}
+<form action="{{ url_for('login') }}" method="post">
+  <div class="form-group">
+    <input class="form-control" name="username" placeholder="Type username">
+    <input type="password" class="form-control" name="password" placeholder="Type password">
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary">Login</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

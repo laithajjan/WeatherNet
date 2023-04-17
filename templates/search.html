@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Weather Search
+{% endblock %}
+
+{% block body %}
+    <h1>Search Weather by City</h1>
+    <form action="/search" method="post">
+        <label for="city">City Name:</label>
+        <input type="text" id="city" name="city" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Add a container for the map -->
+    <div id="map" style="height: 400px; width: 100%;"></div>
+
+    <!-- Initialize the map -->
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add a marker with a popup
+        L.marker([51.505, -0.09]).addTo(map)
+            .bindPopup('Weather information will appear here.')
+            .openPopup();
+    </script>
+{% endblock %}
