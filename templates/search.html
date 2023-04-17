@@ -12,20 +12,41 @@
         <button type="submit">Search</button>
     </form>
 
-    <!-- Add a container for the map -->
-    <div id="map" style="height: 400px; width: 100%;"></div>
+    {% if weather_data is defined %}
+        <!-- Add a container for the map -->
+        <div id="map" style="height: 1000px; width: 100%;"></div>
 
-    <!-- Initialize the map -->
-    <script>
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        <!-- Initialize the map and add the marker with a popup -->
+        <script>
+            var map = L.map('map').setView([{{ weather_data.lat }}, {{ weather_data.lon }}], 13);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18
+            }).addTo(map);
 
-        // Add a marker with a popup
-        L.marker([51.505, -0.09]).addTo(map)
-            .bindPopup('Weather information will appear here.')
-            .openPopup();
-    </script>
+            // Add a marker with a popup containing weather details
+            var marker = L.marker([{{ weather_data.lat }}, {{ weather_data.lon }}]).addTo(map);
+            marker.bindPopup(`
+    <b>Local Time:</b> {{ weather_data.localtime }}<br>
+    <b>Temperature:</b> {{ weather_data.temperature }}°C<br>
+    <b>Weather:</b> {{ weather_data.weather_descriptions[0] }}<br>
+    <b>Feels Like:</b> {{ weather_data.feelslike }}°C<br>
+    <b>Wind Speed:</b> {{ weather_data.wind_speed }} km/h<br>
+    <b>Humidity:</b> {{ weather_data.humidity }}%<br>
+    <b>Precipitation:</b> {{ weather_data.precip }} mm<br>
+    <button onclick="redirectToDetails()">Show More</button>
+`).openPopup();
+
+function redirectToDetails() {
+        var cityName = encodeURIComponent('{{ weather_data.query }}');
+        if (cityName === '') {
+            alert('City name is missing.');
+        } else {
+            window.location.href = '/details/' + cityName;
+        }
+    }
+
+        </script>
+    {% endif %}
 {% endblock %}

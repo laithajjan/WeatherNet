@@ -16,10 +16,16 @@ def fetch_weather_data(city_name):
         response = requests.get(f"http://api.weatherstack.com/current?access_key=7b65f2844eba75ec0d2fd0944a7a66c1&query={city_name}")
         print("request sent")
         data = response.json()
+
+        if 'location' not in data:
+            print(f"No weather data found for the city: {city_name}")
+            return None
+
         location = data["location"]
         current = data["current"]
 
         weather_info = {
+            "query": data["request"]["query"],
             "lat": location["lat"],
             "lon": location["lon"],
             "localtime": location["localtime"],
@@ -37,6 +43,7 @@ def fetch_weather_data(city_name):
     except Exception as error:
         print(f"Error fetching weather data: {error}")
         return None
+
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -70,18 +77,37 @@ def register():
         return render_template("register.html", success=1)
     return render_template("register.html", success=0)
 
-@app.route("/search", methods=["POST", "GET"])
+@app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
-        city_name = request.form["city"]
-        print("before")
-        weather_data = fetch_weather_data(city_name)
-        print("after")
-        if weather_data is not None:
-            # Pass the weather data to your template for rendering
-            return render_template("search.html", weather_data=weather_data)
-        else:
-            # Redirect to an error page or display an error message
-            return render_template("error.html", message="An error occurred while fetching weather data.")
+        city = request.form["city"]
+        url = f"http://api.weatherstack.com/current?access_key=7b65f2844eba75ec0d2fd0944a7a66c1&query={city}"
+        response = requests.get(url)
+        data = response.json()
 
-    return render_template("search.html")
+        weather_data = {
+            "query": data["request"]["query"],
+            "lat": data["location"]["lat"],
+            "lon": data["location"]["lon"],
+            "localtime": data["location"]["localtime"],
+            "temperature": data["current"]["temperature"],
+            "wind_speed": data["current"]["wind_speed"],
+            "humidity": data["current"]["humidity"],
+            "precip": data["current"]["precip"],
+            "weather_icons": data["current"]["weather_icons"],
+            "weather_descriptions": data["current"]["weather_descriptions"],
+            "feelslike": data["current"]["feelslike"]
+        }
+
+        return render_template("search.html", weather_data=weather_data)
+    else:
+        return render_template("search.html")
+
+
+@app.route("/details/<city>", methods=["GET"])
+def details(city):
+    weather_data = fetch_weather_data(city)
+    if weather_data:
+        return render_template("details.html", weather_data=weather_data, city=city)
+    else:
+        return render_template("error.html", message="Error fetching weather data.")

@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Weather Details
+{% endblock %}
+{% block body %}
+    <h1>Weather Details for {{ city }}</h1>
+    <img class="weather-icon" src="{{ weather_data.weather_icons[0] }}" alt="Weather Icon">
+    <ul>
+        <li><b>Local Time:</b> {{ weather_data.localtime }}</li>
+        <li><b>Temperature:</b> {{ weather_data.temperature }}°C</li>
+        <li><b>Weather:</b> {{ weather_data.weather_descriptions[0] }}</li>
+        <li><b>Feels Like:</b> {{ weather_data.feelslike }}°C</li>
+        <li><b>Wind Speed:</b> {{ weather_data.wind_speed }} km/h</li>
+        <li><b>Humidity:</b> {{ weather_data.humidity }}%</li>
+        <li><b>Precipitation:</b> {{ weather_data.precip }} mm</li>
+        <li><b>UV Index:</b> {{ weather_data.uv_index }}</li>
+    </ul>
+
+   <div id="visualizations">
+     <h3>UV Index</h3>
+    <canvas id="uvIndexChart" width="300px" height="300px"></canvas>
+    <h3>Temperature and Humidity</h3>
+    <canvas id="tempHumidityChart"></canvas>
+</div>
+
+<script>
+
+const uvIndexCtx = document.getElementById('uvIndexChart').getContext('2d');
+const uvIndexChart = new Chart(uvIndexCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['UV Index'],
+        datasets: [{
+            data: [{{ weather_data.uv_index }}, 12 - {{ weather_data.uv_index }}],
+            backgroundColor: [
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 255, 255, 0.2)'
+            ],
+            borderColor: [
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 255, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        cutoutPercentage: 50,
+        circumference: Math.PI,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        if (context.dataIndex === 0) {
+                            return 'UV Index: ' + context.raw;
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+});
+
+
+
+    // Create a bar chart for temperature and humidity
+const tempHumidityCtx = document.getElementById('tempHumidityChart').getContext('2d');
+const tempHumidityChart = new Chart(tempHumidityCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Temperature (°C)', 'Feels Like (°C)', 'Humidity (%)'],
+        datasets: [{
+            data: [{{ weather_data.temperature }}, {{ weather_data.feelslike }}, {{ weather_data.humidity }}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero : true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+</script>
+{% endblock %}
