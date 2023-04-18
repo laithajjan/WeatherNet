@@ -18,6 +18,8 @@
     </ul>
 
    <div id="visualizations">
+<h3>Temperature vs Feels Like</h3>
+<canvas id="tempVsFeelsLikeChart"></canvas>
        <h3>Wind Speed and Precipitation</h3>
 <canvas id="windPrecipChart"></canvas>
      <h3>UV Index</h3>
@@ -27,6 +29,39 @@
 </div>
 
 <script>
+
+// Create a bar chart for Temperature vs Feels Like
+const tempVsFeelsLikeCtx = document.getElementById('tempVsFeelsLikeChart').getContext('2d');
+const tempVsFeelsLikeChart = new Chart(tempVsFeelsLikeCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Actual Temperature (°C)', 'Feels Like Temperature (°C)'],
+        datasets: [{
+            data: [{{ weather_data.temperature }}, {{ weather_data.feelslike }}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
 
 const windPrecipCtx = document.getElementById('windPrecipChart').getContext('2d');
 const windPrecipChart = new Chart(windPrecipCtx, {
