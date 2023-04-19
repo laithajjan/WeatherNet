@@ -38,7 +38,7 @@ The user data is stored in a PostgreSQL database.
 ### Results Page
 ![image](https://user-images.githubusercontent.com/52933277/232967938-21c7111e-ced0-4363-896c-65a9a76ad4de.png)
 
-### Details Page
+### Details and Data Analytics Page
 #### Weather Details
 ![image](https://user-images.githubusercontent.com/52933277/232968139-9d68b280-66c1-459f-95d8-c271b7cc7491.png)
 
